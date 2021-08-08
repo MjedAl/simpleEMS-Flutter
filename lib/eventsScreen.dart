@@ -1,105 +1,254 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:provider/provider.dart';
+import '../providers/events.dart';
 
-class eventsScreen extends StatelessWidget {
+class eventsScreen extends StatefulWidget {
   const eventsScreen({Key? key}) : super(key: key);
-  // Normal card
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Container(
-  //     margin: EdgeInsets.all(10),
-  //     child: Column(children: <Widget>[
-  //       Card(
-  //         child: Column(
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: <Widget>[
-  //             ListTile(
-  //               title: new Center(
-  //                 child: Text('Event Title'),
-  //               ),
-  //               subtitle: new Center(
-  //                 child: Text('Event description'),
-  //               ),
-  //             ),
-  //             Container(
-  //               alignment: Alignment.center,
-  //               child: Image.network(
-  //                 'https://picsum.photos/250?image=9',
-  //                 height: 200,
-  //                 width: double.infinity,
-  //                 fit: BoxFit.cover,
-  //               ),
-  //             ),
-  //             Padding(
-  //               padding: EdgeInsets.all(20),
-  //               child: Row(
-  //                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-  //                 children: <Widget>[
-  //                   Row(
-  //                     children: <Widget>[
-  //                       Icon(
-  //                         Icons.date_range,
-  //                       ),
-  //                       SizedBox(
-  //                         width: 6,
-  //                       ),
-  //                       Text('dd/mm/yyy'),
-  //                     ],
-  //                   ),
-  //                   Row(
-  //                     children: <Widget>[
-  //                       Icon(
-  //                         Icons.watch_later,
-  //                       ),
-  //                       SizedBox(
-  //                         width: 6,
-  //                       ),
-  //                       Text("00:00 pm"),
-  //                     ],
-  //                   ),
-  //                   Row(
-  //                     children: <Widget>[
-  //                       Icon(
-  //                         Icons.people,
-  //                       ),
-  //                       SizedBox(
-  //                         width: 6,
-  //                       ),
-  //                       Text("10"),
-  //                     ],
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ]),
-  //   );
-  // }
 
-  // shrimmer
+  @override
+  _eventsScreenState createState() => _eventsScreenState();
+}
+
+class _eventsScreenState extends State<eventsScreen> {
+  Future<void> _refreshEvents(BuildContext context) async {
+    await Provider.of<Events>(context, listen: false).getEvents();
+  }
+
+  @override
+  void initState() {}
+
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(8.0),
-      children: [
-        Shimmer.fromColors(
-          enabled: true,
-          baseColor: Colors.grey[400]!,
-          highlightColor: Colors.grey[100]!,
-          child: ListView.separated(
-            shrinkWrap: true,
-            physics: const ClampingScrollPhysics(),
-            itemCount: 5,
-            itemBuilder: (_, __) => Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: placeHolderEvent(),
-            ),
-            separatorBuilder: (_, __) => const SizedBox(height: 2),
+    final scaffoldKey = new GlobalKey<ScaffoldState>();
+
+    return RefreshIndicator(
+      onRefresh: () => _refreshEvents(context),
+      child: ListView(
+        padding: const EdgeInsets.all(8.0),
+        children: [
+          FutureBuilder(
+            future: Provider.of<Events>(context, listen: false).getEvents(),
+            builder: (ctx, data) {
+              if (data.connectionState == ConnectionState.waiting) {
+                return Shimmer.fromColors(
+                  enabled: true,
+                  baseColor: Colors.grey[400]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    physics: const ClampingScrollPhysics(),
+                    itemCount: 5,
+                    itemBuilder: (_, __) => Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: placeHolderEvent(),
+                    ),
+                    separatorBuilder: (_, __) => const SizedBox(height: 2),
+                  ),
+                );
+              } else {
+                // we have data, lets check for errors
+                if (data.error != null) {
+                  //print(data.error.toString());
+                  return Center(
+                    child: Column(children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Text(
+                          'Whew i\'m sorry :(',
+                          style: TextStyle(
+                            fontSize: 24,
+                          ),
+                        ),
+                      ),
+                      Image(image: AssetImage('assets/images/error_500.png')),
+                    ]),
+                  );
+                } else {
+                  final eventsData =
+                      Provider.of<Events>(context, listen: false);
+                  // TODO replace with consumer?
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    physics: const ClampingScrollPhysics(),
+                    itemCount: eventsData.items.length,
+                    itemBuilder: (_, i) => Column(
+                      children: [
+                        Column(children: <Widget>[
+                          Card(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                ListTile(
+                                  title: new Center(
+                                    child: Text(eventsData.items[i].name),
+                                  ),
+                                  subtitle: new Center(
+                                    child:
+                                        Text(eventsData.items[i].description),
+                                  ),
+                                ),
+                                eventsData.items[i].image != "null"
+                                    ? Container(
+                                        alignment: Alignment.center,
+                                        child: Image.network(
+                                          eventsData.items[i].image,
+                                          height: 200,
+                                          width: double.infinity,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : Text(''),
+                                Padding(
+                                  padding: EdgeInsets.all(20),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: <Widget>[
+                                      Row(
+                                        children: <Widget>[
+                                          Icon(
+                                            Icons.date_range,
+                                          ),
+                                          SizedBox(
+                                            width: 6,
+                                          ),
+                                          Text(eventsData.items[i].timeTemp),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          Icon(
+                                            Icons.watch_later,
+                                          ),
+                                          SizedBox(
+                                            width: 6,
+                                          ),
+                                          Text("00:00 pm"),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          Icon(
+                                            Icons.people,
+                                          ),
+                                          SizedBox(
+                                            width: 6,
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ]),
+                      ],
+                    ),
+                    separatorBuilder: (_, __) => const SizedBox(height: 2),
+                  );
+                }
+              }
+            },
           ),
-        ),
-      ],
+          // eventsData.items.length == 0
+          //     ? Shimmer.fromColors(
+          //         enabled: true,
+          //         baseColor: Colors.grey[400]!,
+          //         highlightColor: Colors.grey[100]!,
+          //         child: ListView.separated(
+          //           shrinkWrap: true,
+          //           physics: const ClampingScrollPhysics(),
+          //           itemCount: 5,
+          //           itemBuilder: (_, __) => Padding(
+          //             padding: const EdgeInsets.only(bottom: 4),
+          //             child: placeHolderEvent(),
+          //           ),
+          //           separatorBuilder: (_, __) => const SizedBox(height: 2),
+          //         ),
+          //       )
+          //     : ListView.separated(
+          //         shrinkWrap: true,
+          //         physics: const ClampingScrollPhysics(),
+          //         itemCount: eventsData.items.length,
+          //         itemBuilder: (_, i) => Column(
+          //           children: [
+          //             Column(children: <Widget>[
+          //               Card(
+          //                 child: Column(
+          //                   mainAxisSize: MainAxisSize.min,
+          //                   children: <Widget>[
+          //                     ListTile(
+          //                       title: new Center(
+          //                         child: Text(eventsData.items[i].name),
+          //                       ),
+          //                       subtitle: new Center(
+          //                         child: Text(eventsData.items[i].description),
+          //                       ),
+          //                     ),
+          //                     eventsData.items[i].image != "null"
+          //                         ? Container(
+          //                             alignment: Alignment.center,
+          //                             child: Image.network(
+          //                               eventsData.items[i].image,
+          //                               height: 200,
+          //                               width: double.infinity,
+          //                               fit: BoxFit.cover,
+          //                             ),
+          //                           )
+          //                         : Text(''),
+          //                     Padding(
+          //                       padding: EdgeInsets.all(20),
+          //                       child: Row(
+          //                         mainAxisAlignment:
+          //                             MainAxisAlignment.spaceAround,
+          //                         children: <Widget>[
+          //                           Row(
+          //                             children: <Widget>[
+          //                               Icon(
+          //                                 Icons.date_range,
+          //                               ),
+          //                               SizedBox(
+          //                                 width: 6,
+          //                               ),
+          //                               Text(eventsData.items[i].timeTemp),
+          //                             ],
+          //                           ),
+          //                           Row(
+          //                             children: <Widget>[
+          //                               Icon(
+          //                                 Icons.watch_later,
+          //                               ),
+          //                               SizedBox(
+          //                                 width: 6,
+          //                               ),
+          //                               Text("00:00 pm"),
+          //                             ],
+          //                           ),
+          //                           Row(
+          //                             children: <Widget>[
+          //                               Icon(
+          //                                 Icons.people,
+          //                               ),
+          //                               SizedBox(
+          //                                 width: 6,
+          //                               ),
+          //                             ],
+          //                           ),
+          //                         ],
+          //                       ),
+          //                     ),
+          //                   ],
+          //                 ),
+          //               ),
+          //             ]),
+          //           ],
+          //         ),
+          //         separatorBuilder: (_, __) => const SizedBox(height: 2),
+          //       ),
+        ],
+      ),
     );
   }
 }
