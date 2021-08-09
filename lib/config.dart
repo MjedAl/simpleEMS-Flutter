@@ -1,5 +1,11 @@
 class config {
   static final String API_LINK = "1/api/v1/";
-  static String privateKey =
+  static String private_Key =
+      '-----BEGIN PRIVATE KEY-----\n3gxjaVEW6QWG9rCZUZ3FIwyQqte6Q6DJX3dR6mZfJA9==\n-----END PRIVATE KEY-----\n';
+  static String private_Key2 =
+      '-----BEGIN PRIVATE KEY-----\n3gxjaVEW6QWG9rCZUZ3FIwyQqte6Q6DJX3dR6mZfJA9==\n-----END PRIVATE KEY-----\n';
+  static String private_Key3 =
+      '-----BEGIN PRIVATE KEY-----\n3gxjaVEW6QWG9rCZUZ3FIwyQqte6Q6DJX3dR6mZfJA9==\n-----END PRIVATE KEY-----\n';
+  static String private_Key4 =
       '-----BEGIN PRIVATE KEY-----\n3gxjaVEW6QWG9rCZUZ3FIwyQqte6Q6DJX3dR6mZfJA9==\n-----END PRIVATE KEY-----\n';
 }
