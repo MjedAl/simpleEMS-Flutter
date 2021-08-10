@@ -4,52 +4,98 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:simpleems/models/api_exception.dart';
 import 'package:http/http.dart' as http;
-
+import 'dart:convert';
+import 'dart:async';
 import '../config.dart';
+import 'dart:io';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class Auth with ChangeNotifier {
-  // String _token;
-  // String _refreshToken;
+  String _token = "";
+  String _refreshToken = "";
+  DateTime _expiryDate = DateTime.now();
+  // String _userId = "";
+  var storage = new FlutterSecureStorage();
 
-  // DateTime _expiryDate;
+  Auth() {
+    // print('New auth');
+    // construct the object, retreive token from storage,
+    // set refresh token and expiry time
+    //storage =
 
-  // bool _freshLogin;
-  // String _userId;
-  final storage = new FlutterSecureStorage();
+    storage.read(key: "token").then((value) {
+      print("Token > " + value.toString());
+
+      if (value.toString() != "") {
+        _token = value.toString();
+        _refreshToken = storage.read(key: "refreshToken") as String;
+        storage.read(key: "refreshToken").then((valueR) {
+          _refreshToken = valueR.toString();
+        });
+        _expiryDate = JwtDecoder.getExpirationDate(_token);
+        notifyListeners();
+      } else {
+        _token = "";
+      }
+    });
+
+    // check if token is valid
+  }
+
   // String value = await storage.read(key: key);
 
   Future<void> signup() async {}
-  Future<void> login(String username, String password) async {
-    // try {
-    final response = await http.post('${config.API_LINK}/login' as Uri, body: {
-      'username': username,
-      'password': password,
-    });
-    print(response);
+  Future<void> login(String email, String password) async {
+    try {
+      var jsonBody = jsonEncode({'email': email, 'password': password});
+      final response = await http.post(Uri.parse('${config.API_LINK}/login'),
+          body: jsonBody,
+          headers: {
+            "Content-Type": "application/json"
+          }).timeout(const Duration(seconds: 3));
 
-    // switch (response.statusCode) {
-    //   case 200:
-    //     // Ok login and do and notify blah blah...
-    //     break;
-    //   case 401:
-    //     throw new ApiException("Server Error", 500);
-    //   default:
-    //     throw new ApiException("Server Error", 500);
-    //     _apiResponse.ApiError = ApiError.fromJson(json.decode(response.body));
-    //     break;
-    // }
-    // } on SocketException {
-    //   throw new ApiException("Server Error", 500);
-    // }
+      final responseBody = json.decode(response.body) as Map<String, dynamic>;
+      if (response.statusCode == 200) {
+        _token = responseBody['token'].toString();
+        _refreshToken = responseBody['refresh_token'].toString();
+        _expiryDate = JwtDecoder.getExpirationDate(_token);
+        await storage.write(key: 'token', value: _token);
+
+        // print('Stored it ?');
+        // String tokenS = '';
+        // await storage
+        //     .read(key: 'token')
+        //     .then((value) => tokenS = value.toString());
+        // print(tokenS);
+
+        await storage.write(key: 'refreshToken', value: _refreshToken);
+        notifyListeners();
+        return Future.value();
+      } else {
+        throw new ApiException(
+            responseBody['message'].toString(), response.statusCode);
+      }
+    } on SocketException {
+      throw new ApiException("Server Error", 500);
+    } on TimeoutException {
+      throw new ApiException("Server not responding", 500);
+    }
     return;
   }
 
-  String get token {
-    // TODO check for all
-    // If expired refresh
-    // If errored throw that error
-    return "";
+  Future<String> get token async {
+    if (_token != "") {
+      if (JwtDecoder.isExpired(_token)) {
+        await refreshToken();
+      }
+      return _token;
+    } else {
+      return "";
+    }
   }
 
-  Future<void> refreshToken() async {}
+  Future<void> refreshToken() async {
+    // send request to api to refresh the token
+    return;
+  }
 }

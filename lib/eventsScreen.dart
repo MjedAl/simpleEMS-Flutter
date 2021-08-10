@@ -20,6 +20,7 @@ class _eventsScreenState extends State<eventsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final eventsData = Provider.of<Events>(context);
     final scaffoldKey = new GlobalKey<ScaffoldState>();
 
     return RefreshIndicator(
@@ -28,7 +29,7 @@ class _eventsScreenState extends State<eventsScreen> {
         padding: const EdgeInsets.all(8.0),
         children: [
           FutureBuilder(
-            future: Provider.of<Events>(context, listen: false).getEvents(),
+            //future: Provider.of<Events>(context, listen: false).getEvents(),
             builder: (ctx, data) {
               if (data.connectionState == ConnectionState.waiting) {
                 return Shimmer.fromColors(
@@ -65,8 +66,6 @@ class _eventsScreenState extends State<eventsScreen> {
                     ]),
                   );
                 } else {
-                  final eventsData =
-                      Provider.of<Events>(context, listen: false);
                   // TODO replace with consumer?
                   return ListView.separated(
                     shrinkWrap: true,

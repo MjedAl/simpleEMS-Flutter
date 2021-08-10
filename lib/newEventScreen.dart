@@ -146,7 +146,6 @@ class _newEventScreenState extends State<newEventScreen> {
                 timeLabelText: "Hour",
                 onChanged: (val) => print(val),
                 validator: (val) {
-                  print(val);
                   return null;
                 },
                 onSaved: (val) => print(val),

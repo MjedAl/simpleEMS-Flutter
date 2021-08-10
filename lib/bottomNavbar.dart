@@ -79,14 +79,16 @@ class _bottomNavbarState extends State<bottomNavbar> {
             onTap: (value) {
               // if user tapper on profile and he is not logged in
               if (value == 2) {
-                setState(() {
-                  if (authData.token == "") {
+                authData.token.then((token) {
+                  if (token == "") {
                     //
                     Navigator.of(context).pushNamed('/login');
                     // _selectedPageIndex = 3;
                   } else {
-                    _selectedPageIndex = 2;
-                    _selectedPageIndexInBar = 2;
+                    setState(() {
+                      _selectedPageIndex = 2;
+                      _selectedPageIndexInBar = 2;
+                    });
                   }
                 });
               } else {
