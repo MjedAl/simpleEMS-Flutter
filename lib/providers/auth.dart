@@ -18,31 +18,23 @@ class Auth with ChangeNotifier {
   var storage = new FlutterSecureStorage();
 
   Auth() {
-    // print('New auth');
+    print('New auth');
     // construct the object, retreive token from storage,
     // set refresh token and expiry time
     //storage =
 
-    storage.read(key: "token").then((value) {
-      print("Token > " + value.toString());
-
-      if (value.toString() != "") {
+    storage.read(key: 'token').then((value) {
+      //print(value);
+      if (value != null) {
         _token = value.toString();
-        _refreshToken = storage.read(key: "refreshToken") as String;
         storage.read(key: "refreshToken").then((valueR) {
           _refreshToken = valueR.toString();
+          _expiryDate = JwtDecoder.getExpirationDate(_token);
+          notifyListeners();
         });
-        _expiryDate = JwtDecoder.getExpirationDate(_token);
-        notifyListeners();
-      } else {
-        _token = "";
       }
     });
-
-    // check if token is valid
   }
-
-  // String value = await storage.read(key: key);
 
   Future<void> signup() async {}
   Future<void> login(String email, String password) async {
@@ -52,7 +44,7 @@ class Auth with ChangeNotifier {
           body: jsonBody,
           headers: {
             "Content-Type": "application/json"
-          }).timeout(const Duration(seconds: 3));
+          }).timeout(const Duration(seconds: 30));
 
       final responseBody = json.decode(response.body) as Map<String, dynamic>;
       if (response.statusCode == 200) {
@@ -61,12 +53,12 @@ class Auth with ChangeNotifier {
         _expiryDate = JwtDecoder.getExpirationDate(_token);
         await storage.write(key: 'token', value: _token);
 
-        // print('Stored it ?');
-        // String tokenS = '';
-        // await storage
-        //     .read(key: 'token')
-        //     .then((value) => tokenS = value.toString());
-        // print(tokenS);
+        print('Stored it ?');
+        String tokenS = '';
+        await storage
+            .read(key: 'token')
+            .then((value) => tokenS = value.toString());
+        print(tokenS);
 
         await storage.write(key: 'refreshToken', value: _refreshToken);
         notifyListeners();
@@ -84,12 +76,14 @@ class Auth with ChangeNotifier {
   }
 
   Future<String> get token async {
+    // print('g token');
     if (_token != "") {
       if (JwtDecoder.isExpired(_token)) {
         await refreshToken();
       }
       return _token;
     } else {
+      //  print('empt');
       return "";
     }
   }

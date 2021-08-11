@@ -77,7 +77,7 @@ class _bottomNavbarState extends State<bottomNavbar> {
         clipBehavior: Clip.antiAlias,
         child: BottomNavigationBar(
             onTap: (value) {
-              // if user tapper on profile and he is not logged in
+              // if user tapped on profile and he is not logged in
               if (value == 2) {
                 authData.token.then((token) {
                   if (token == "") {

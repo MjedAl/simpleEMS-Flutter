@@ -53,11 +53,11 @@ class _loginScreenState extends State<loginScreen> {
           _loading = true;
           _errorText = '';
         });
-        print('123');
+        //print('123');
         await Provider.of<Auth>(context, listen: false)
             .login(_emailValue, _passwordValue)
             .then((value) => Navigator.of(context).pop());
-        print('123456');
+        // print('123456');
         // ^ this didn't work
       } on ApiException catch (error) {
         switch (error.code) {

@@ -9,9 +9,7 @@ import './event.dart';
 import './auth.dart';
 
 class Events with ChangeNotifier {
-  //final String _authToken;
-  Auth _auth;
-
+  Auth? _auth;
   Events(this._auth, this._items);
 
   void addEvent() {}
@@ -24,43 +22,63 @@ class Events with ChangeNotifier {
     return _items.firstWhere((event) => event.id == id);
   }
 
-  Future<void> getEvents() async {
+  void update() {
+    // just tell them to update
+    notifyListeners();
+  }
+
+  Future<List<Event>> getEvents() async {
+    //print('getE');
     try {
       var response;
-      _auth.token.then((token) async {
-        if (token != "") {
-          response =
-              await http.get(Uri.parse('${config.API_LINK}/events'), headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': 'Bearer $token',
-          }).timeout(const Duration(seconds: 20));
-        } else {
-          response = await http
-              .get(Uri.parse('${config.API_LINK}/events'))
-              .timeout(const Duration(seconds: 20));
-        }
 
-        final events = json.decode(response.body) as Map<String, dynamic>;
+      var token = "";
+      if (_auth != null) {
+        await _auth!.token.then((value) => token = value);
+      }
+      //print('kpok');
+      //print("tt>" + token);
+      if (token != "") {
+        response =
+            await http.get(Uri.parse('${config.API_LINK}/events'), headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        }).timeout(const Duration(seconds: 10));
+      } else {
+        // print('here');
+        response = await http
+            .get(Uri.parse('${config.API_LINK}/events'))
+            .timeout(const Duration(seconds: 10));
+        // print('k');
+      }
+      //  print('done');
 
-        final List<Event> loadedEvents = [];
-        events['events'].forEach((data) {
-          print(data);
-          loadedEvents.add(Event(
-            id: data['id'],
-            name: data['name'],
-            description: data['description'],
-            image: data['image'] == null ? "null" : data['image'],
-            //timeTemp: data['time-time'] == null ? "temp" : data['time-time'],
-            timeTemp: "temp",
-          ));
-        });
-        _items = loadedEvents;
-        notifyListeners();
-        return items;
+      final events = json.decode(response.body) as Map<String, dynamic>;
+      // print('l');
+      final List<Event> loadedEvents = [];
+      events['events'].forEach((data) {
+        loadedEvents.add(Event(
+          id: data['id'],
+          name: data['name'],
+          description: data['description'],
+          image: data['image'] == null ? "null" : data['image'],
+          //timeTemp: data['time-time'] == null ? "temp" : data['time-time'],
+          timeTemp: "temp",
+        ));
       });
+      _items = loadedEvents;
+      //notifyListeners();
+      return _items;
+    } on SocketException {
+      //print('jiojioj');
+      throw new Exception("Server Error");
+    } on TimeoutException {
+      // print('beoijoij');
+      throw new Exception("Server not responding");
     } catch (error) {
-      print("ERROR:" + error.toString());
+      //  print('00000');
+      //  print("ERROR:" + error.toString());
       throw error;
     }
   }
