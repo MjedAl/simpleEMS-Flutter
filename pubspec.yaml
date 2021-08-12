@@ -35,6 +35,7 @@ dependencies:
   flutter_secure_storage: ^4.2.1
   multiselect_formfield: ^0.1.6
   jwt_decoder: ^2.0.1
+  shared_preferences: ^2.0.6
 dev_dependencies:
   flutter_test:
     sdk: flutter

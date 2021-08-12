@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import './eventsScreen.dart';
-import './profileScreen.dart';
-import './newEventScreen.dart';
-import './loginScreen.dart';
+import './screens/eventsScreen.dart';
+import './screens/profileScreen.dart';
+import './screens/newEventScreen.dart';
+import './screens/loginScreen.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth.dart';
 
@@ -50,15 +50,62 @@ class _bottomNavbarState extends State<bottomNavbar> {
 
   final scaffoldKey = new GlobalKey<ScaffoldState>();
 
+  showAlertDialog(BuildContext context, Function logout) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text("Continue"),
+      onPressed: () {
+        logout();
+        setState(() {
+          _selectedPageIndex = 0;
+          _selectedPageIndexInBar = 0;
+        });
+        Navigator.pop(context);
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text("Confirmation"),
+      content: Text("Are you sure you want to log out?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final authData = Provider.of<Auth>(context);
+    final _authData = Provider.of<Auth>(context);
 
     bool keyboardIsOpen = MediaQuery.of(context).viewInsets.bottom != 0;
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
         title: Text(_pages[_selectedPageIndex]['title'] as String),
+        actions: _selectedPageIndex == 2
+            ? <Widget>[
+                IconButton(
+                    onPressed: () {
+                      showAlertDialog(context, _authData.logout);
+                    },
+                    icon: Icon(Icons.logout))
+              ]
+            : null,
       ),
       body: _pages[_selectedPageIndex]['page'] as Widget,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -79,7 +126,7 @@ class _bottomNavbarState extends State<bottomNavbar> {
             onTap: (value) {
               // if user tapped on profile and he is not logged in
               if (value == 2) {
-                authData.token.then((token) {
+                _authData.token.then((token) {
                   if (token == "") {
                     //
                     Navigator.of(context).pushNamed('/login');

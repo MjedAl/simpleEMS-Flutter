@@ -31,6 +31,8 @@ class _loginScreenState extends State<loginScreen> {
   }
 
   final _formKey = GlobalKey<FormState>();
+  bool _signUp = false;
+  String _nameValue = "";
   String _emailValue = "";
   String _passwordValue = "";
   bool _loading = false;
@@ -53,12 +55,15 @@ class _loginScreenState extends State<loginScreen> {
           _loading = true;
           _errorText = '';
         });
-        //print('123');
-        await Provider.of<Auth>(context, listen: false)
-            .login(_emailValue, _passwordValue)
-            .then((value) => Navigator.of(context).pop());
-        // print('123456');
-        // ^ this didn't work
+        if (_signUp) {
+          await Provider.of<Auth>(context, listen: false)
+              .signup(_nameValue, _emailValue, _passwordValue)
+              .then((value) => Navigator.of(context).pop());
+        } else {
+          await Provider.of<Auth>(context, listen: false)
+              .login(_emailValue, _passwordValue)
+              .then((value) => Navigator.of(context).pop());
+        }
       } on ApiException catch (error) {
         switch (error.code) {
           case 400:
@@ -79,14 +84,6 @@ class _loginScreenState extends State<loginScreen> {
   }
 
   Widget build(BuildContext context) {
-    // final forgotLabel = TextButton(
-    //   child: Text(
-    //     'Forgot password?',
-    //     style: TextStyle(color: Colors.black54),
-    //   ),
-    //   onPressed: () {},
-    // );
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Log in"),
@@ -98,6 +95,40 @@ class _loginScreenState extends State<loginScreen> {
             shrinkWrap: true,
             padding: EdgeInsets.only(left: 24.0, right: 24.0),
             children: <Widget>[
+              Container(
+                child: _signUp
+                    ? Column(
+                        children: <Widget>[
+                          TextFormField(
+                            onSaved: (value) => _nameValue = value as String,
+                            keyboardType: TextInputType.name,
+                            autofocus: false,
+                            enabled: !_loading,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Invalid name!';
+                              }
+                              return null;
+                            },
+                            decoration: _errorOnFileds
+                                ? const InputDecoration(
+                                    errorText: "",
+                                    border: OutlineInputBorder(),
+                                    icon: Icon(Icons.person),
+                                    labelText: 'Name',
+                                  )
+                                : const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    icon: Icon(Icons.person),
+                                    labelText: 'Name',
+                                  ),
+                          ),
+                          SizedBox(height: 8.0),
+                        ],
+                      )
+                    : null,
+              ),
+
               TextFormField(
                 onSaved: (value) => _emailValue = value as String,
                 keyboardType: TextInputType.emailAddress,
@@ -106,9 +137,6 @@ class _loginScreenState extends State<loginScreen> {
                 validator: (value) {
                   if (value!.isEmpty || !value.contains('@')) {
                     return 'Invalid email!';
-                  }
-                  if (_errorOnFileds) {
-                    return " k";
                   }
                   return null;
                 },
@@ -159,7 +187,7 @@ class _loginScreenState extends State<loginScreen> {
                       style: TextStyle(fontSize: 16, color: Colors.red),
                     ))
                   : Text(''),
-              SizedBox(height: 24.0),
+              SizedBox(height: 16.0),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -175,8 +203,19 @@ class _loginScreenState extends State<loginScreen> {
                         child: CircularProgressIndicator(
                           color: Colors.white,
                         ))
-                    : Text('Log In', style: TextStyle(color: Colors.white)),
+                    : Text(_signUp ? "Sign up" : "Log in",
+                        style: TextStyle(color: Colors.white)),
               ),
+              TextButton(
+                child: Text(_signUp ? "Log in" : "Sign up"),
+                onPressed: () {
+                  setState(() {
+                    _errorText = "";
+                    _signUp = !_signUp;
+                    _errorOnFileds = false;
+                  });
+                },
+              )
               // forgotLabel
             ],
           ),

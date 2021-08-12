@@ -5,7 +5,7 @@ import 'package:simpleems/bottomNavbar.dart';
 import 'package:provider/provider.dart';
 import './providers/events.dart';
 import './providers/auth.dart';
-import './loginScreen.dart';
+import './screens/loginScreen.dart';
 
 void main() {
   runApp(MyApp());
