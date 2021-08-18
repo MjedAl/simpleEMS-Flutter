@@ -28,20 +28,6 @@ class newEventScreen extends StatefulWidget {
   _newEventScreenState createState() => _newEventScreenState();
 }
 
-class ImageUploadModel {
-  bool isUploaded;
-  bool uploading;
-  File imageFile;
-  String imageUrl;
-
-  ImageUploadModel({
-    required this.isUploaded,
-    required this.uploading,
-    required this.imageFile,
-    required this.imageUrl,
-  });
-}
-
 class _newEventScreenState extends State<newEventScreen> {
   @override
   final _formKey = GlobalKey<FormState>();
@@ -57,15 +43,29 @@ class _newEventScreenState extends State<newEventScreen> {
   bool _loading = false;
   String _errorText = "";
   bool _errorOnFileds = false;
+  bool _missingImage = false;
 
   Future<void> _submit() async {
     setState(() {
       _errorOnFileds = false;
       _errorText = "";
+      _missingImage = false;
     });
     if (!_formKey.currentState!.validate()) {
+      if (_imageFile == null) {
+        setState(() {
+          _missingImage = true;
+        });
+      }
       return;
     } else {
+      // maybe still no image
+      if (_imageFile == null) {
+        setState(() {
+          _missingImage = true;
+        });
+        return;
+      }
       _formKey.currentState!.save();
       setState(() {
         _loading = true;
@@ -101,7 +101,7 @@ class _newEventScreenState extends State<newEventScreen> {
                     enabled: !_loading,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Invalid title!';
+                        return '';
                       }
                       return null;
                     },
@@ -120,7 +120,7 @@ class _newEventScreenState extends State<newEventScreen> {
                     enabled: !_loading,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Invalid description!';
+                        return '';
                       }
                       return null;
                     },
@@ -158,10 +158,15 @@ class _newEventScreenState extends State<newEventScreen> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(4),
-                                          border:
-                                              Border.all(color: Colors.grey)),
+                                          border: Border.all(
+                                              color: _missingImage
+                                                  ? Colors.red
+                                                  : Colors.grey)),
                                       child: IconButton(
-                                        icon: Icon(Icons.add),
+                                        icon: Icon(Icons.add,
+                                            color: _missingImage
+                                                ? Colors.red
+                                                : Colors.grey),
                                         onPressed: () {
                                           _onAddImageClick();
                                         },
@@ -174,7 +179,9 @@ class _newEventScreenState extends State<newEventScreen> {
                                           Image.file(
                                             File(_imageFile!.path),
                                             //width: 300,
-                                            //height: 300,
+                                            height: 200,
+                                            width: double.infinity,
+                                            fit: BoxFit.cover,
                                           ),
                                           Positioned(
                                             right: 5,
@@ -208,7 +215,7 @@ class _newEventScreenState extends State<newEventScreen> {
                     enabled: !_loading,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Invalid location!';
+                        return '';
                       }
                       return null;
                     },
@@ -226,7 +233,7 @@ class _newEventScreenState extends State<newEventScreen> {
                     enabled: !_loading,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Invalid date and time!';
+                        return '';
                       }
                       return null;
                     },
