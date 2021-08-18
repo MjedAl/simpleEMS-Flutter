@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:simpleems/models/api_exception.dart';
@@ -8,6 +9,18 @@ class loginScreen extends StatefulWidget {
 
   @override
   _loginScreenState createState() => _loginScreenState();
+}
+
+class loginScreenRoute extends CupertinoPageRoute {
+  loginScreenRoute()
+      : super(builder: (BuildContext context) => new loginScreen());
+
+  // OPTIONAL IF YOU WISH TO HAVE SOME EXTRA ANIMATION WHILE ROUTING
+  @override
+  Widget buildPage(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation) {
+    return new FadeTransition(opacity: animation, child: new loginScreen());
+  }
 }
 
 class _loginScreenState extends State<loginScreen> {
@@ -53,7 +66,6 @@ class _loginScreenState extends State<loginScreen> {
       try {
         setState(() {
           _loading = true;
-          _errorText = '';
         });
         if (_signUp) {
           await Provider.of<Auth>(context, listen: false)
@@ -86,7 +98,20 @@ class _loginScreenState extends State<loginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Log in"),
+        title: Text(_signUp ? "Sign up" : "Log in"),
+        // actions: <Widget>[
+        //   IconButton(
+        //     icon: const Icon(Icons.help),
+        //     onPressed: () => showModalBottomSheet(
+        //       context: context,
+        //       builder: (BuildContext context) => Container(
+        //         alignment: Alignment.center,
+        //         height: 200,
+        //         child: const Text('Dummy bottom sheet'),
+        //       ),
+        //     ),
+        //   ),
+        // ],
       ),
       body: Center(
         child: Form(
@@ -206,8 +231,9 @@ class _loginScreenState extends State<loginScreen> {
                     : Text(_signUp ? "Sign up" : "Log in",
                         style: TextStyle(color: Colors.white)),
               ),
+              SizedBox(height: 2.0),
               TextButton(
-                child: Text(_signUp ? "Log in" : "Sign up"),
+                child: Text(_signUp ? "Log in instead" : "Sign up instead"),
                 onPressed: () {
                   setState(() {
                     _errorText = "";
@@ -215,7 +241,23 @@ class _loginScreenState extends State<loginScreen> {
                     _errorOnFileds = false;
                   });
                 },
-              )
+              ),
+              SizedBox(height: 2.0),
+              TextButton(
+                  child: Text(
+                    "Reset password",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext context) => Container(
+                        alignment: Alignment.center,
+                        height: 400,
+                        child: const Text('Dummy bottom sheet'),
+                      ),
+                    );
+                  }),
               // forgotLabel
             ],
           ),

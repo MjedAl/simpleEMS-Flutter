@@ -56,6 +56,8 @@ class Auth with ChangeNotifier {
       };
       print(extractedUserData);
       userData = extractedUserData;
+    } else {
+      logout();
     }
     print('kk');
     return userData;
@@ -135,6 +137,7 @@ class Auth with ChangeNotifier {
     }
   }
 
+  // this should be used to get token when you want to use it it API request
   Future<String> get token async {
     // print('g token');
     if (_token != "") {
@@ -146,6 +149,11 @@ class Auth with ChangeNotifier {
       //  print('empt');
       return "";
     }
+  }
+
+  // use this just to see if user is logged in or not
+  bool get userLoggedIn {
+    return _token != "";
   }
 
   Future<void> refreshToken() async {

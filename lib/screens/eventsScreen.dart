@@ -96,17 +96,17 @@ class _eventsScreenState extends State<eventsScreen> {
                                     child: Text(eventsData[i].description),
                                   ),
                                 ),
-                                eventsData[i].image != "null"
-                                    ? Container(
-                                        alignment: Alignment.center,
-                                        child: Image.network(
-                                          eventsData[i].image,
-                                          height: 200,
-                                          width: double.infinity,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      )
-                                    : Text(''),
+                                // eventsData[i].image != "null"
+                                //     ? Container(
+                                //         alignment: Alignment.center,
+                                //         child: Image.network(
+                                //           eventsData[i].image,
+                                //           height: 200,
+                                //           width: double.infinity,
+                                //           fit: BoxFit.cover,
+                                //         ),
+                                //       )
+                                //     : Text(''),
                                 Padding(
                                   padding: EdgeInsets.all(20),
                                   child: Row(
