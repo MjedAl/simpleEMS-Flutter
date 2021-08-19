@@ -1,13 +1,17 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:multiselect_formfield/multiselect_formfield.dart';
 import 'package:provider/provider.dart';
-import '../providers/auth.dart';
+import '../providers/events.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
+import '../models/api_exception.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 
 class newEventScreenRoute extends CupertinoPageRoute {
   newEventScreenRoute()
@@ -59,7 +63,6 @@ class _newEventScreenState extends State<newEventScreen> {
       }
       return;
     } else {
-      // maybe still no image
       if (_imageFile == null) {
         setState(() {
           _missingImage = true;
@@ -70,7 +73,50 @@ class _newEventScreenState extends State<newEventScreen> {
       setState(() {
         _loading = true;
       });
-      // submit request
+
+      final bytes = File(_imageFile!.path).readAsBytesSync();
+      String _image64 = base64.encode(bytes);
+
+      try {
+        DateTime time = DateFormat('yyyy-MM-DD hh:mm').parse(_dateValue);
+
+        await Provider.of<Events>(context, listen: false)
+            .addEvent(_titleValue, _descriptionValue, _locationValue,
+                time.toUtc().toString(), _image64)
+            .then((value) {
+          // TODO fix
+          Fluttertoast.showToast(
+            msg: "Event successfully added :)",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+          Navigator.of(context).pop();
+          setState(() {
+            _loading = false;
+          });
+        });
+      } on ApiException catch (error) {
+        // TODO show error. fix it
+        Fluttertoast.showToast(
+          msg: error.message,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        print(error);
+        setState(() {
+          _loading = false;
+        });
+      } catch (error) {
+        print("rrr" + error.toString());
+      }
     }
   }
 
@@ -246,8 +292,7 @@ class _newEventScreenState extends State<newEventScreen> {
                     icon: Icon(Icons.event),
                     dateLabelText: 'Date',
                     timeLabelText: "Time",
-                    onChanged: (val) => print(val),
-                    onSaved: (value) => _locationValue = value as String,
+                    onSaved: (value) => _dateValue = value as String,
                   ),
                   const SizedBox(height: 24.0),
                   ElevatedButton(

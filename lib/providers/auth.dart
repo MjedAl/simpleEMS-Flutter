@@ -121,7 +121,6 @@ class Auth with ChangeNotifier {
         _expiryDate = JwtDecoder.getExpirationDate(_token);
         await storage.write(key: 'token', value: _token);
         await storage.write(key: 'refreshToken', value: _refreshToken);
-        print('koij');
         final prefs = await SharedPreferences.getInstance();
         userData = responseBody['userData'] as Map<String, dynamic>;
         prefs.setString('userData', json.encode(userData));

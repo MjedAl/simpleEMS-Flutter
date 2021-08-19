@@ -242,23 +242,22 @@ class _loginScreenState extends State<loginScreen> {
                   });
                 },
               ),
-              SizedBox(height: 2.0),
-              TextButton(
-                  child: Text(
-                    "Reset password",
-                    style: TextStyle(color: Colors.red),
-                  ),
-                  onPressed: () {
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (BuildContext context) => Container(
-                        alignment: Alignment.center,
-                        height: 400,
-                        child: const Text('Dummy bottom sheet'),
-                      ),
-                    );
-                  }),
-              // forgotLabel
+              // SizedBox(height: 2.0),
+              // TextButton(
+              //     child: Text(
+              //       "Reset password",
+              //       style: TextStyle(color: Colors.red),
+              //     ),
+              //     onPressed: () {
+              //       showModalBottomSheet(
+              //         context: context,
+              //         builder: (BuildContext context) => Container(
+              //           alignment: Alignment.center,
+              //           height: 400,
+              //           child: const Text('Dummy bottom sheet'),
+              //         ),
+              //       );
+              //     }),
             ],
           ),
         ),

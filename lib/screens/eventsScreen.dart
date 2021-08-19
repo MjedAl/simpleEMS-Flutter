@@ -96,17 +96,17 @@ class _eventsScreenState extends State<eventsScreen> {
                                     child: Text(eventsData[i].description),
                                   ),
                                 ),
-                                // eventsData[i].image != "null"
-                                //     ? Container(
-                                //         alignment: Alignment.center,
-                                //         child: Image.network(
-                                //           eventsData[i].image,
-                                //           height: 200,
-                                //           width: double.infinity,
-                                //           fit: BoxFit.cover,
-                                //         ),
-                                //       )
-                                //     : Text(''),
+                                eventsData[i].image != "null"
+                                    ? Container(
+                                        alignment: Alignment.center,
+                                        child: Image.network(
+                                          eventsData[i].image,
+                                          height: 200,
+                                          width: double.infinity,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : Text(''),
                                 Padding(
                                   padding: EdgeInsets.all(20),
                                   child: Row(
@@ -117,32 +117,38 @@ class _eventsScreenState extends State<eventsScreen> {
                                         children: <Widget>[
                                           Icon(
                                             Icons.date_range,
+                                            color: Colors.blue,
                                           ),
                                           SizedBox(
                                             width: 6,
                                           ),
-                                          Text(eventsData[i].timeTemp),
+                                          Text(eventsData[i].monthD),
                                         ],
                                       ),
                                       Row(
                                         children: <Widget>[
                                           Icon(
                                             Icons.watch_later,
+                                            color: Colors.blue,
                                           ),
                                           SizedBox(
                                             width: 6,
                                           ),
-                                          Text("00:00 pm"),
+                                          Text(eventsData[i].hourM),
                                         ],
                                       ),
                                       Row(
                                         children: <Widget>[
                                           Icon(
                                             Icons.people,
+                                            color: Colors.blue,
                                           ),
                                           SizedBox(
                                             width: 6,
                                           ),
+                                          Text(eventsData[i]
+                                              .currentRegistered
+                                              .toString())
                                         ],
                                       ),
                                     ],

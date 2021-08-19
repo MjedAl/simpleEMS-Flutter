@@ -7,12 +7,13 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import './event.dart';
 import './auth.dart';
+import '../models/api_exception.dart';
+import 'package:intl/intl.dart';
 
 class Events with ChangeNotifier {
   Auth? _auth;
   Events(this._auth, this._items);
 
-  void addEvent() {}
   List<Event> _items = [];
   List<Event> get items {
     return [..._items];
@@ -28,16 +29,15 @@ class Events with ChangeNotifier {
   }
 
   Future<List<Event>> getEvents() async {
-    //print('getE');
     try {
       var response;
 
       var token = "";
+      // if there is a valid auth object, means user is logged in
+      // get the latest token, refresh if it was expired
       if (_auth != null) {
         await _auth!.token.then((value) => token = value);
       }
-      //print('kpok');
-      //print("tt>" + token);
       if (token != "") {
         response =
             await http.get(Uri.parse('${config.API_LINK}/events'), headers: {
@@ -46,39 +46,88 @@ class Events with ChangeNotifier {
           'Authorization': 'Bearer $token',
         }).timeout(const Duration(seconds: 10));
       } else {
-        // print('here');
         response = await http
             .get(Uri.parse('${config.API_LINK}/events'))
             .timeout(const Duration(seconds: 10));
-        // print('k');
       }
-      //  print('done');
 
       final events = json.decode(response.body) as Map<String, dynamic>;
-      // print('l');
+
       final List<Event> loadedEvents = [];
       events['events'].forEach((data) {
+        // TODO convert time to local
+        DateTime timeNow = DateTime.parse(data['time-full']).toLocal();
+
         loadedEvents.add(Event(
-          id: data['id'],
-          name: data['name'],
-          description: data['description'],
-          image: data['image'] == null ? "null" : data['image'],
-          //timeTemp: data['time-time'] == null ? "temp" : data['time-time'],
-          timeTemp: "temp",
-        ));
+            id: data['id'],
+            name: data['name'],
+            description: data['description'],
+            image: data['image'] == null ? "null" : data['image'],
+            monthD: DateFormat.MMMM().format(timeNow) +
+                ', ' +
+                timeNow.day.toString(),
+            hourM: timeNow.hour.toString() + ":" + timeNow.minute.toString(),
+            currentRegistered: data['currentRegistered']));
       });
       _items = loadedEvents;
+      // Not needed?
       //notifyListeners();
       return _items;
     } on SocketException {
-      //print('jiojioj');
-      throw new Exception("Server Error");
+      throw new ApiException("Server Error", 500);
     } on TimeoutException {
-      // print('beoijoij');
-      throw new Exception("Server not responding");
+      throw new ApiException("Server not responding", 500);
     } catch (error) {
-      //  print('00000');
-      //  print("ERROR:" + error.toString());
+      print(error);
+      throw error;
+    }
+  }
+
+  //
+  Future<bool> addEvent(String title, String description, String location,
+      String date, String image) async {
+    // Check for the token
+
+    try {
+      var response;
+      var token = "";
+      if (_auth != null) {
+        await _auth!.token.then((value) => token = value);
+      }
+      if (token != "") {
+        var jsonBody = jsonEncode({
+          'name': title,
+          'description': description,
+          'location': location,
+          'date': date,
+          'image': image
+        });
+
+        response = await http.post(Uri.parse('${config.API_LINK}/events'),
+            body: jsonBody,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            }).timeout(const Duration(seconds: 25));
+        final responseBody = json.decode(response.body) as Map<String, dynamic>;
+        print(responseBody["success"]);
+        if (response.statusCode == 200) {
+          return true;
+        } else {
+          throw new ApiException(
+              responseBody['message'].toString(), response.statusCode);
+        }
+      } else {
+        // this might happen when user was logged in but token expired
+        // and refreshing the token failed
+        throw new ApiException("Please log in and try again :(", 401);
+      }
+    } on SocketException {
+      throw new ApiException("Server Error", 500);
+    } on TimeoutException {
+      throw new ApiException("Server not responding", 500);
+    } catch (error) {
       throw error;
     }
   }
