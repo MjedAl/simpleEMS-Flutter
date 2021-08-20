@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/services.dart';
-import 'package:multiselect_formfield/multiselect_formfield.dart';
 import 'package:provider/provider.dart';
 import '../providers/events.dart';
 import 'package:flutter/cupertino.dart';
@@ -224,7 +223,6 @@ class _newEventScreenState extends State<newEventScreen> {
                                         children: <Widget>[
                                           Image.file(
                                             File(_imageFile!.path),
-                                            //width: 300,
                                             height: 200,
                                             width: double.infinity,
                                             fit: BoxFit.cover,

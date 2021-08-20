@@ -25,6 +25,7 @@ class loginScreenRoute extends CupertinoPageRoute {
 
 class _loginScreenState extends State<loginScreen> {
   @override
+  // not working
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -53,12 +54,10 @@ class _loginScreenState extends State<loginScreen> {
   bool _errorOnFileds = false;
 
   Future<void> _login() async {
-    // reset error text
     setState(() {
       _errorOnFileds = false;
       _errorText = "";
     });
-    // validate;
     if (!_formKey.currentState!.validate()) {
       return;
     } else {
@@ -90,6 +89,7 @@ class _loginScreenState extends State<loginScreen> {
           _errorText = error.message;
         });
       } catch (error) {
+        // TODO handle error
         //print("rrr" + error.toString());
       }
     }
@@ -99,19 +99,6 @@ class _loginScreenState extends State<loginScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_signUp ? "Sign up" : "Log in"),
-        // actions: <Widget>[
-        //   IconButton(
-        //     icon: const Icon(Icons.help),
-        //     onPressed: () => showModalBottomSheet(
-        //       context: context,
-        //       builder: (BuildContext context) => Container(
-        //         alignment: Alignment.center,
-        //         height: 200,
-        //         child: const Text('Dummy bottom sheet'),
-        //       ),
-        //     ),
-        //   ),
-        // ],
       ),
       body: Center(
         child: Form(
@@ -242,6 +229,7 @@ class _loginScreenState extends State<loginScreen> {
                   });
                 },
               ),
+              // TODO
               // SizedBox(height: 2.0),
               // TextButton(
               //     child: Text(

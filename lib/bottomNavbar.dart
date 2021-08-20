@@ -40,7 +40,6 @@ class _bottomNavbarState extends State<bottomNavbar> {
   final scaffoldKey = new GlobalKey<ScaffoldState>();
 
   showAlertDialog(BuildContext context, Function logout) {
-    // set up the buttons
     Widget cancelButton = TextButton(
       child: Text(
         "Cancel",
@@ -69,8 +68,6 @@ class _bottomNavbarState extends State<bottomNavbar> {
         continueButton,
       ],
     );
-
-    // show the dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -147,11 +144,9 @@ class _bottomNavbarState extends State<bottomNavbar> {
                 _selectPage(value);
               }
             },
-            //backgroundColor: Theme.of(context).primaryColor,
             unselectedItemColor: Colors.black,
             selectedItemColor: Theme.of(context).accentColor,
             currentIndex: _selectedPageIndex,
-            // currentIndex: _selectedPageIndex,
             items: [
               BottomNavigationBarItem(icon: Icon(Icons.list), label: "Events"),
               BottomNavigationBarItem(

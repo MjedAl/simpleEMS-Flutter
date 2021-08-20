@@ -30,7 +30,6 @@ class Auth with ChangeNotifier {
         storage.read(key: "refreshToken").then((valueR) {
           _refreshToken = valueR.toString();
           _expiryDate = JwtDecoder.getExpirationDate(_token);
-          // restore other fileds , (name, email, picture from normal storage)
           loadUser();
           notifyListeners();
         });
@@ -39,14 +38,10 @@ class Auth with ChangeNotifier {
   }
 
   Future<Map<String, dynamic>> loadUser() async {
-    print('loading user data');
     final prefs = await SharedPreferences.getInstance();
-    print('.....' + prefs.containsKey('userData').toString());
     if (prefs.containsKey('userData')) {
-      print('kpoj');
       final extractedUserData =
           json.decode(prefs.getString('userData')!) as Map<String, dynamic>;
-      print('kpoijpio');
       userData = {
         "email": extractedUserData["email"].toString(),
         "emailConfirmed": extractedUserData["email"].toString(),
@@ -54,12 +49,10 @@ class Auth with ChangeNotifier {
         "name": extractedUserData["email"].toString(),
         "picture": extractedUserData["email"].toString(),
       };
-      print(extractedUserData);
       userData = extractedUserData;
     } else {
       logout();
     }
-    print('kk');
     return userData;
   }
 
@@ -138,14 +131,12 @@ class Auth with ChangeNotifier {
 
   // this should be used to get token when you want to use it it API request
   Future<String> get token async {
-    // print('g token');
     if (_token != "") {
       if (JwtDecoder.isExpired(_token)) {
         await refreshToken();
       }
       return _token;
     } else {
-      //  print('empt');
       return "";
     }
   }
@@ -156,6 +147,7 @@ class Auth with ChangeNotifier {
   }
 
   Future<void> refreshToken() async {
+    // TODO
     // send request to api to refresh the token
     return;
   }

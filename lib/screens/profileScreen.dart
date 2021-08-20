@@ -18,11 +18,6 @@ class _profileScreenState extends State<profileScreen> {
         ? Column(children: [
             Container(
                 color: Colors.blue,
-                // decoration: BoxDecoration(
-                //     gradient: LinearGradient(
-                //         begin: Alignment.topCenter,
-                //         end: Alignment.bottomCenter,
-                //         colors: [Colors.blue, Colors.white])),
                 child: Container(
                   width: double.infinity,
                   height: 200.0,
@@ -62,68 +57,69 @@ class _profileScreenState extends State<profileScreen> {
                     ),
                   ),
                 )),
-            Card(
-              margin: EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
-              clipBehavior: Clip.antiAlias,
-              color: Colors.white,
-              elevation: 5.0,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 22.0),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Column(
-                        children: <Widget>[
-                          Text(
-                            "Created events",
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontSize: 22.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 5.0,
-                          ),
-                          Text(
-                            "1",
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              color: Colors.blue,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        children: <Widget>[
-                          Text(
-                            "Subscribed events",
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontSize: 22.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 5.0,
-                          ),
-                          Text(
-                            "4",
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              color: Colors.blue,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
+            // TODO show more information about the user
+            // Card(
+            //   margin: EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+            //   clipBehavior: Clip.antiAlias,
+            //   color: Colors.white,
+            //   elevation: 5.0,
+            //   child: Padding(
+            //     padding:
+            //         const EdgeInsets.symmetric(horizontal: 8.0, vertical: 22.0),
+            //     child: Row(
+            //       children: <Widget>[
+            //         Expanded(
+            //           child: Column(
+            //             children: <Widget>[
+            //               Text(
+            //                 "Created events",
+            //                 style: TextStyle(
+            //                   color: Colors.blue,
+            //                   fontSize: 22.0,
+            //                   fontWeight: FontWeight.bold,
+            //                 ),
+            //               ),
+            //               SizedBox(
+            //                 height: 5.0,
+            //               ),
+            //               Text(
+            //                 "1",
+            //                 style: TextStyle(
+            //                   fontSize: 20.0,
+            //                   color: Colors.blue,
+            //                 ),
+            //               )
+            //             ],
+            //           ),
+            //         ),
+            //         Expanded(
+            //           child: Column(
+            //             children: <Widget>[
+            //               Text(
+            //                 "Subscribed events",
+            //                 style: TextStyle(
+            //                   color: Colors.blue,
+            //                   fontSize: 22.0,
+            //                   fontWeight: FontWeight.bold,
+            //                 ),
+            //               ),
+            //               SizedBox(
+            //                 height: 5.0,
+            //               ),
+            //               Text(
+            //                 "4",
+            //                 style: TextStyle(
+            //                   fontSize: 20.0,
+            //                   color: Colors.blue,
+            //                 ),
+            //               )
+            //             ],
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // )
           ])
         : Text('error');
   }

@@ -21,7 +21,6 @@ class _eventsScreenState extends State<eventsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //print('rebuild');
     final scaffoldKey = new GlobalKey<ScaffoldState>();
 
     return RefreshIndicator(
@@ -32,11 +31,6 @@ class _eventsScreenState extends State<eventsScreen> {
           FutureBuilder(
             future: Provider.of<Events>(context).getEvents(),
             builder: (ctx, data) {
-              // print(data.connectionState);
-              //print(';');
-              //  print(data.error);
-              //print(';');
-              //   print(data.data);
               if (data.connectionState == ConnectionState.waiting) {
                 return Shimmer.fromColors(
                   enabled: true,
@@ -54,11 +48,7 @@ class _eventsScreenState extends State<eventsScreen> {
                   ),
                 );
               } else {
-                // we have data, lets check for errors
-                // print('error status:' + data.error.toString());
                 if (data.error != null) {
-                  //  print('error');
-                  //print(data.error.toString());
                   return Center(
                     child: Column(children: [
                       Padding(
@@ -75,7 +65,6 @@ class _eventsScreenState extends State<eventsScreen> {
                   );
                 } else {
                   var eventsData = data.data as List<Event>;
-
                   // TODO replace with consumer?
                   return ListView.separated(
                     shrinkWrap: true,
@@ -166,101 +155,6 @@ class _eventsScreenState extends State<eventsScreen> {
               }
             },
           ),
-          // eventsData.items.length == 0
-          //     ? Shimmer.fromColors(
-          //         enabled: true,
-          //         baseColor: Colors.grey[400]!,
-          //         highlightColor: Colors.grey[100]!,
-          //         child: ListView.separated(
-          //           shrinkWrap: true,
-          //           physics: const ClampingScrollPhysics(),
-          //           itemCount: 5,
-          //           itemBuilder: (_, __) => Padding(
-          //             padding: const EdgeInsets.only(bottom: 4),
-          //             child: placeHolderEvent(),
-          //           ),
-          //           separatorBuilder: (_, __) => const SizedBox(height: 2),
-          //         ),
-          //       )
-          //     : ListView.separated(
-          //         shrinkWrap: true,
-          //         physics: const ClampingScrollPhysics(),
-          //         itemCount: eventsData.items.length,
-          //         itemBuilder: (_, i) => Column(
-          //           children: [
-          //             Column(children: <Widget>[
-          //               Card(
-          //                 child: Column(
-          //                   mainAxisSize: MainAxisSize.min,
-          //                   children: <Widget>[
-          //                     ListTile(
-          //                       title: new Center(
-          //                         child: Text(eventsData.items[i].name),
-          //                       ),
-          //                       subtitle: new Center(
-          //                         child: Text(eventsData.items[i].description),
-          //                       ),
-          //                     ),
-          //                     eventsData.items[i].image != "null"
-          //                         ? Container(
-          //                             alignment: Alignment.center,
-          //                             child: Image.network(
-          //                               eventsData.items[i].image,
-          //                               height: 200,
-          //                               width: double.infinity,
-          //                               fit: BoxFit.cover,
-          //                             ),
-          //                           )
-          //                         : Text(''),
-          //                     Padding(
-          //                       padding: EdgeInsets.all(20),
-          //                       child: Row(
-          //                         mainAxisAlignment:
-          //                             MainAxisAlignment.spaceAround,
-          //                         children: <Widget>[
-          //                           Row(
-          //                             children: <Widget>[
-          //                               Icon(
-          //                                 Icons.date_range,
-          //                               ),
-          //                               SizedBox(
-          //                                 width: 6,
-          //                               ),
-          //                               Text(eventsData.items[i].timeTemp),
-          //                             ],
-          //                           ),
-          //                           Row(
-          //                             children: <Widget>[
-          //                               Icon(
-          //                                 Icons.watch_later,
-          //                               ),
-          //                               SizedBox(
-          //                                 width: 6,
-          //                               ),
-          //                               Text("00:00 pm"),
-          //                             ],
-          //                           ),
-          //                           Row(
-          //                             children: <Widget>[
-          //                               Icon(
-          //                                 Icons.people,
-          //                               ),
-          //                               SizedBox(
-          //                                 width: 6,
-          //                               ),
-          //                             ],
-          //                           ),
-          //                         ],
-          //                       ),
-          //                     ),
-          //                   ],
-          //                 ),
-          //               ),
-          //             ]),
-          //           ],
-          //         ),
-          //         separatorBuilder: (_, __) => const SizedBox(height: 2),
-          //       ),
         ],
       ),
     );

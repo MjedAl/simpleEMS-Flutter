@@ -33,7 +33,6 @@ dependencies:
   http: ^0.13.3
   provider: ^5.0.0
   flutter_secure_storage: ^4.2.1
-  multiselect_formfield: ^0.1.6
   jwt_decoder: ^2.0.1
   shared_preferences: ^2.0.6
   image_picker: ^0.8.3+2
@@ -41,6 +40,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  # screenshots: 1.0.0
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

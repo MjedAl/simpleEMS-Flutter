@@ -24,7 +24,6 @@ class Events with ChangeNotifier {
   }
 
   void update() {
-    // just tell them to update
     notifyListeners();
   }
 
@@ -55,9 +54,7 @@ class Events with ChangeNotifier {
 
       final List<Event> loadedEvents = [];
       events['events'].forEach((data) {
-        // TODO convert time to local
         DateTime timeNow = DateTime.parse(data['time-full']).toLocal();
-
         loadedEvents.add(Event(
             id: data['id'],
             name: data['name'],
@@ -70,24 +67,18 @@ class Events with ChangeNotifier {
             currentRegistered: data['currentRegistered']));
       });
       _items = loadedEvents;
-      // Not needed?
-      //notifyListeners();
       return _items;
     } on SocketException {
       throw new ApiException("Server Error", 500);
     } on TimeoutException {
       throw new ApiException("Server not responding", 500);
     } catch (error) {
-      print(error);
       throw error;
     }
   }
 
-  //
   Future<bool> addEvent(String title, String description, String location,
       String date, String image) async {
-    // Check for the token
-
     try {
       var response;
       var token = "";
@@ -111,7 +102,6 @@ class Events with ChangeNotifier {
               'Authorization': 'Bearer $token',
             }).timeout(const Duration(seconds: 25));
         final responseBody = json.decode(response.body) as Map<String, dynamic>;
-        print(responseBody["success"]);
         if (response.statusCode == 200) {
           return true;
         } else {
