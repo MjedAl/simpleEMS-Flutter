@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:provider/provider.dart';
 import '../providers/events.dart';
+import '../providers/event.dart';
 
 class eventsScreen extends StatefulWidget {
   const eventsScreen({Key? key}) : super(key: key);
@@ -12,7 +13,7 @@ class eventsScreen extends StatefulWidget {
 
 class _eventsScreenState extends State<eventsScreen> {
   Future<void> _refreshEvents(BuildContext context) async {
-    await Provider.of<Events>(context, listen: false).getEvents();
+    Provider.of<Events>(context, listen: false).update();
   }
 
   @override
@@ -28,7 +29,7 @@ class _eventsScreenState extends State<eventsScreen> {
         padding: const EdgeInsets.all(8.0),
         children: [
           FutureBuilder(
-            future: Provider.of<Events>(context, listen: false).getEvents(),
+            future: Provider.of<Events>(context).getEvents(),
             builder: (ctx, data) {
               if (data.connectionState == ConnectionState.waiting) {
                 return Shimmer.fromColors(
@@ -47,9 +48,7 @@ class _eventsScreenState extends State<eventsScreen> {
                   ),
                 );
               } else {
-                // we have data, lets check for errors
                 if (data.error != null) {
-                  //print(data.error.toString());
                   return Center(
                     child: Column(children: [
                       Padding(
@@ -65,13 +64,12 @@ class _eventsScreenState extends State<eventsScreen> {
                     ]),
                   );
                 } else {
-                  final eventsData =
-                      Provider.of<Events>(context, listen: false);
+                  var eventsData = data.data as List<Event>;
                   // TODO replace with consumer?
                   return ListView.separated(
                     shrinkWrap: true,
                     physics: const ClampingScrollPhysics(),
-                    itemCount: eventsData.items.length,
+                    itemCount: eventsData.length,
                     itemBuilder: (_, i) => Column(
                       children: [
                         Column(children: <Widget>[
@@ -81,18 +79,17 @@ class _eventsScreenState extends State<eventsScreen> {
                               children: <Widget>[
                                 ListTile(
                                   title: new Center(
-                                    child: Text(eventsData.items[i].name),
+                                    child: Text(eventsData[i].name),
                                   ),
                                   subtitle: new Center(
-                                    child:
-                                        Text(eventsData.items[i].description),
+                                    child: Text(eventsData[i].description),
                                   ),
                                 ),
-                                eventsData.items[i].image != "null"
+                                eventsData[i].image != "null"
                                     ? Container(
                                         alignment: Alignment.center,
                                         child: Image.network(
-                                          eventsData.items[i].image,
+                                          eventsData[i].image,
                                           height: 200,
                                           width: double.infinity,
                                           fit: BoxFit.cover,
@@ -109,32 +106,38 @@ class _eventsScreenState extends State<eventsScreen> {
                                         children: <Widget>[
                                           Icon(
                                             Icons.date_range,
+                                            color: Colors.blue,
                                           ),
                                           SizedBox(
                                             width: 6,
                                           ),
-                                          Text(eventsData.items[i].timeTemp),
+                                          Text(eventsData[i].monthD),
                                         ],
                                       ),
                                       Row(
                                         children: <Widget>[
                                           Icon(
                                             Icons.watch_later,
+                                            color: Colors.blue,
                                           ),
                                           SizedBox(
                                             width: 6,
                                           ),
-                                          Text("00:00 pm"),
+                                          Text(eventsData[i].hourM),
                                         ],
                                       ),
                                       Row(
                                         children: <Widget>[
                                           Icon(
                                             Icons.people,
+                                            color: Colors.blue,
                                           ),
                                           SizedBox(
                                             width: 6,
                                           ),
+                                          Text(eventsData[i]
+                                              .currentRegistered
+                                              .toString())
                                         ],
                                       ),
                                     ],
@@ -152,101 +155,6 @@ class _eventsScreenState extends State<eventsScreen> {
               }
             },
           ),
-          // eventsData.items.length == 0
-          //     ? Shimmer.fromColors(
-          //         enabled: true,
-          //         baseColor: Colors.grey[400]!,
-          //         highlightColor: Colors.grey[100]!,
-          //         child: ListView.separated(
-          //           shrinkWrap: true,
-          //           physics: const ClampingScrollPhysics(),
-          //           itemCount: 5,
-          //           itemBuilder: (_, __) => Padding(
-          //             padding: const EdgeInsets.only(bottom: 4),
-          //             child: placeHolderEvent(),
-          //           ),
-          //           separatorBuilder: (_, __) => const SizedBox(height: 2),
-          //         ),
-          //       )
-          //     : ListView.separated(
-          //         shrinkWrap: true,
-          //         physics: const ClampingScrollPhysics(),
-          //         itemCount: eventsData.items.length,
-          //         itemBuilder: (_, i) => Column(
-          //           children: [
-          //             Column(children: <Widget>[
-          //               Card(
-          //                 child: Column(
-          //                   mainAxisSize: MainAxisSize.min,
-          //                   children: <Widget>[
-          //                     ListTile(
-          //                       title: new Center(
-          //                         child: Text(eventsData.items[i].name),
-          //                       ),
-          //                       subtitle: new Center(
-          //                         child: Text(eventsData.items[i].description),
-          //                       ),
-          //                     ),
-          //                     eventsData.items[i].image != "null"
-          //                         ? Container(
-          //                             alignment: Alignment.center,
-          //                             child: Image.network(
-          //                               eventsData.items[i].image,
-          //                               height: 200,
-          //                               width: double.infinity,
-          //                               fit: BoxFit.cover,
-          //                             ),
-          //                           )
-          //                         : Text(''),
-          //                     Padding(
-          //                       padding: EdgeInsets.all(20),
-          //                       child: Row(
-          //                         mainAxisAlignment:
-          //                             MainAxisAlignment.spaceAround,
-          //                         children: <Widget>[
-          //                           Row(
-          //                             children: <Widget>[
-          //                               Icon(
-          //                                 Icons.date_range,
-          //                               ),
-          //                               SizedBox(
-          //                                 width: 6,
-          //                               ),
-          //                               Text(eventsData.items[i].timeTemp),
-          //                             ],
-          //                           ),
-          //                           Row(
-          //                             children: <Widget>[
-          //                               Icon(
-          //                                 Icons.watch_later,
-          //                               ),
-          //                               SizedBox(
-          //                                 width: 6,
-          //                               ),
-          //                               Text("00:00 pm"),
-          //                             ],
-          //                           ),
-          //                           Row(
-          //                             children: <Widget>[
-          //                               Icon(
-          //                                 Icons.people,
-          //                               ),
-          //                               SizedBox(
-          //                                 width: 6,
-          //                               ),
-          //                             ],
-          //                           ),
-          //                         ],
-          //                       ),
-          //                     ),
-          //                   ],
-          //                 ),
-          //               ),
-          //             ]),
-          //           ],
-          //         ),
-          //         separatorBuilder: (_, __) => const SizedBox(height: 2),
-          //       ),
         ],
       ),
     );

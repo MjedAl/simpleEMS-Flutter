@@ -1,17 +1,18 @@
-import 'dart:ffi';
+// import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:simpleems/bottomNavbar.dart';
 import 'package:provider/provider.dart';
 import './providers/events.dart';
 import './providers/auth.dart';
-import './loginScreen.dart';
+import './screens/loginScreen.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  //Auth auth = Auth();
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
           value: Auth(),
         ),
         ChangeNotifierProxyProvider<Auth, Events>(
-            create: (ctx) => Events(Auth(), []),
+            create: (ctx) => Events(null, []),
             update: (ctx, auth, previousEvents) => Events(
                 auth, previousEvents == null ? [] : previousEvents.items)),
       ],

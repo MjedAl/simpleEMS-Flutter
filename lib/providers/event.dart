@@ -6,12 +6,16 @@ class Event with ChangeNotifier {
   final String name;
   final String description;
   final String image;
-  final String timeTemp;
+  final String monthD;
+  final String hourM;
+  final int currentRegistered;
   Event({
     required this.id,
     required this.name,
     required this.description,
     required this.image,
-    required this.timeTemp,
+    required this.monthD,
+    required this.hourM,
+    required this.currentRegistered,
   });
 }
